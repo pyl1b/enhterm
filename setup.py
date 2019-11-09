@@ -32,6 +32,7 @@ EXTRAS = {
         'twine',
         'wheel',
         'sphinx',
+        'sphinx_rtd_theme',
         'recommonmark',
         'm2r'
     ],

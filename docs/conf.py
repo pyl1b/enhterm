@@ -12,20 +12,26 @@
 #
 import os
 import sys
-from recommonmark.parser import CommonMarkParser
+import datetime
+
 from recommonmark.transform import AutoStructify
 
+
+now = datetime.datetime.now()
 sys.path.insert(0, os.path.abspath('..'))
+
+from enhterm.__version__ import __version__
+from enhterm.constants import __author__, __package_name__
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'enhterm'
-copyright = '2019, Nicu Tofan'
-author = 'Nicu Tofan'
+project = __package_name__
+copyright = '%d, %s' % (now.year, __author__)
+author = __author__
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.0'
+release = __version__
 
 master_doc = 'index'
 
@@ -42,7 +48,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    #'recommonmark',
+    "sphinx_rtd_theme",
     'm2r'
 ]
 
@@ -70,7 +76,7 @@ source_suffix = ['.rst', '.md']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = "sphinx_rtd_theme"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -80,6 +86,5 @@ html_static_path = ['_static']
 
 def setup(app):
     app.add_config_value('deploy_mode', '', 'env')
-    app.add_config_value('recommonmark_config', {
-            }, True)
+    app.add_config_value('recommonmark_config', {}, True)
     app.add_transform(AutoStructify)
