@@ -1,6 +1,8 @@
 # enhterm
 
-enhterm is Cmd-based framework for writing line-oriented command interpreters.
+enhterm is an [open source](https://github.com/pyl1b/enhterm.git),
+MIT licensed, [Cmd-based](https://docs.python.org/3/library/cmd.html)
+framework for writing line-oriented command interpreters.
 
 [![Build Status](https://travis-ci.org/pyl1b/enhterm.svg?branch=master)](https://travis-ci.org/pyl1b/enhterm)
 [![Documentation Status](https://readthedocs.org/projects/enhterm/badge/?version=latest)](https://enhterm.readthedocs.io/en/latest/?badge=latest)
@@ -29,6 +31,7 @@ Install
 
 You can also download/clone the source, in which case you have to:
 
+    git clone https://github.com/pyl1b/enhterm.git
     python setup.py install
         
 To contribute a patch clone the repo, create a new branch, install in
