@@ -24,15 +24,13 @@ class SubcommandMixin(object):
         Add a sub-command.
 
         Arguments:
-        ----------
-
-        command : string or list
-            Can be either a path or a single string (
-            will be converted in a path with a single element).
-        subcommand : string
-            The final element of the path.
-        callable : string
-            The name of the function to call.
+            command (string or list) :
+                Can be either a path or a single string
+                (will be converted in a path with a single element).
+            subcommand (string) :
+                The final element of the path.
+            callable (string) :
+                The name of the function to call.
         """
         if not isinstance(command, (list, set, tuple)):
             command = (command, )

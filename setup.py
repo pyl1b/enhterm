@@ -30,7 +30,9 @@ EXTRAS = {
     'dev': [
         'nose',
         'twine',
-        'wheel'
+        'wheel',
+        'sphinx',
+        'recommonmark'
     ],
     'tests': [
         'mock',
@@ -112,9 +114,6 @@ setup(
     python_requires=REQUIRES_PYTHON,
     url=URL,
     packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
-    # If your package is a single module, use this instead of 'packages':
-    # py_modules=['mypackage'],
-
     # entry_points={
     #     'console_scripts': ['mycli=mymodule:cli'],
     # },
@@ -123,6 +122,12 @@ setup(
     include_package_data=True,
     license='MIT',
     test_suite='nose.collector',
+    download_url='https://github.com/pyl1b/%s/archive/v%s.zip' % (NAME, about['__version__']),
+    project_urls={
+        "Bug Tracker": "https://github.com/pyl1b/%s/issues" % NAME,
+        "Documentation": "https://readthedocs.org/projects/%s/" % NAME,
+        "Source Code": "https://github.com/pyl1b/%s" % NAME,
+    },
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers

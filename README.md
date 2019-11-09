@@ -3,6 +3,7 @@
 enhterm is Cmd-based framework for writing line-oriented command interpreters.
 
 [![Build Status](https://travis-ci.org/pyl1b/enhterm.svg?branch=master)](https://travis-ci.org/pyl1b/enhterm)
+[![Documentation Status](https://readthedocs.org/projects/enhterm/badge/?version=latest)](https://enhterm.readthedocs.io/en/latest/?badge=latest)
 
 enhterm provides a class that extends 
 [cmd.Cmd](https://docs.python.org/3/library/cmd.html) 

@@ -16,7 +16,7 @@ logger = logging.getLogger('enhterm')
 
 class CommandMixin(object):
     """
-    Extends normal command processing by allowing strings to be executes.
+    Extends normal command processing by allowing strings to be executed.
 
     Depends on MessagesMixin.
     """
