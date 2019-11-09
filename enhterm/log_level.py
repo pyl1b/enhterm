@@ -27,11 +27,11 @@ class LogLevelMixin(object):
             "TARGET is one of `c[onsole]` or `f[ile]` (default is console)")
         console_handler = None
         file_handler = None
-        for handler in logger.handlers:
-            if isinstance(handler, logging.StreamHandler):
-                console_handler = handler
-            elif isinstance(handler, logging.FileHandler):
+        for handler in logging.getLogger().handlers:
+            if isinstance(handler, logging.FileHandler):
                 file_handler = handler
+            elif isinstance(handler, logging.StreamHandler):
+                console_handler = handler
 
         def get_kind(value):
             kind = value.lower()
@@ -81,9 +81,9 @@ class LogLevelMixin(object):
             except ValueError:
                 self.error(_("Invalid level"), command_format)
 
-        if not (log_level is None or target is None or target[0] is None):
+        if not (log_level is None or target is None):
             target.setLevel(log_level)
-            top_log = logging.getLogger('')
+            top_log = logging.getLogger()
             if top_log.level > log_level:
                 top_log.setLevel(log_level)
             logger.debug('New log level %s set to %s', level_str, target_str)
