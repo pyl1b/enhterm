@@ -28,9 +28,14 @@ REQUIRED = [
 # What packages are optional?
 EXTRAS = {
     'dev': [
+        'nose',
         'twine',
         'wheel'
-    }
+    ],
+    'tests': [
+        'mock',
+        'nose',
+    ],
 }
 
 # The rest you shouldn't have to touch too much :)
@@ -117,6 +122,7 @@ setup(
     extras_require=EXTRAS,
     include_package_data=True,
     license='MIT',
+    test_suite='nose.collector',
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
