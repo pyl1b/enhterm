@@ -32,7 +32,8 @@ EXTRAS = {
         'twine',
         'wheel',
         'sphinx',
-        'recommonmark'
+        'recommonmark',
+        'm2r'
     ],
     'tests': [
         'mock',
