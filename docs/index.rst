@@ -10,10 +10,7 @@ Welcome to enhterm's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-.. toctree::
-  :maxdepth: 5
-
-  README <readme_link>
+.. mdinclude:: ../README.md
 
 Indices and tables
 ==================
