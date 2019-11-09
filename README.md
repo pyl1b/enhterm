@@ -4,7 +4,8 @@ enhterm is Cmd-based framework for writing line-oriented command interpreters.
 
 [![Build Status](https://travis-ci.org/pyl1b/enhterm.svg?branch=master)](https://travis-ci.org/pyl1b/enhterm)
 
-It provides a class that extends [cmd.Cmd](https://docs.python.org/3/library/cmd.html) 
+enhterm provides a class that extends 
+[cmd.Cmd](https://docs.python.org/3/library/cmd.html) 
 and which is also intended to be inherited by a user class to create a shell.
 
 Functionality provided by this package is split among mixins, allowing you
@@ -19,6 +20,20 @@ constructed as described above can be used like so:
     
     if __name__ == '__main__':
         ExampleShell().cmdloop()
+
+Install
+-------
+
+    pip install enhterm
+
+You can also download/clone the source, in which case you have to:
+
+    python setup.py install
+        
+To contribute a patch clone the repo, create a new branch, install in
+develop mode:
+        
+    python setup.py develop
 
 What is included
 ----------------
