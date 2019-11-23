@@ -8,3 +8,4 @@ __credits__ = []
 __license__ = "MIT"
 __maintainer__ = "Nicu Tofan"
 __email__ = "nicu.tofan@gmail.com"
+__package_url__ = 'https://github.com/pyl1b/%s' % __package_name__
