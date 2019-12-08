@@ -52,4 +52,3 @@ class EnhTerm(MessagesMixin, ExitMixin, HelpMixin,
     def emptyline(self):
         """Called when an empty line is entered in response to the prompt."""
         pass
-

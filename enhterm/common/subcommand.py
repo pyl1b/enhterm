@@ -38,13 +38,13 @@ class SubcommandMixin(object):
 
         the_store = self.subcommands
         traceme = ''
-        for cmnditr in command:
+        for item in command:
             try:
-                dive = the_store[cmnditr]
+                dive = the_store[item]
             except KeyError:
                 dive = {}
-                the_store[cmnditr] = dive
-            traceme = '%s_%s' % (traceme, cmnditr) if len(traceme) else cmnditr
+                the_store[item] = dive
+            traceme = '%s_%s' % (traceme, item) if len(traceme) else item
             the_store = dive
 
         # we can compute this ourselves.
@@ -93,8 +93,8 @@ class SubcommandMixin(object):
         def recursive(indent, value):
             for kkk in value:
                 self.info_line("%s%s" % (indent, kkk))
-                newval = value[kkk]
-                if not isinstance(newval, str):
-                    recursive(indent+'  ', newval)
+                new_val = value[kkk]
+                if not isinstance(new_val, str):
+                    recursive(indent + '  ', new_val)
 
         recursive('', self.subcommands)

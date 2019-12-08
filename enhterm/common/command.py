@@ -24,7 +24,8 @@ class CommandMixin(object):
         super(CommandMixin, self).__init__(*args, **kwargs)
 
     def cmd_with_result(self, line):
-        """Interpret the argument as if it had been typed in response
+        """
+        Interpret the argument as if it had been typed in response
         to the prompt.
         """
         prefix = 'do_'

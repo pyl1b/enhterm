@@ -51,6 +51,7 @@ class HelpMixin(object):
                         tag_do='sdo_'):
                     self.print_message("%s\n" % str(self.nohelp % (arg,)))
         else:
+            # noinspection PyCallByClass
             cmd.Cmd.do_help(self, arg)
         if len(arg) == 0:
             if len(self.subcommands) > 0:

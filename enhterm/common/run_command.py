@@ -24,10 +24,10 @@ class RunCommandsMixin(object):
         """
         if isinstance(commands, str):
             commands = commands.split('\n')
-        for cmditer in commands:
-            if cmditer.strip().startswith("#"):
+        for item in commands:
+            if item.strip().startswith("#"):
                 continue
-            should_exit, result = self.cmd_with_result(cmditer)
+            should_exit, result = self.cmd_with_result(item)
             if not result:
                 break
 
@@ -42,8 +42,8 @@ class RunCommandsMixin(object):
         """
         Executes the commands in a file.
 
-        Parameters
-        ----------
+        Options
+        -------
 
         path : string
             The path to a file to execute.

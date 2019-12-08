@@ -165,8 +165,8 @@ class MacroMixin(object):
         """
         Lists available macros.
 
-        Parameters
-        ----------
+        Options
+        -------
 
         content : bool
             (optional, default: False) Show the content of the macros.
@@ -202,10 +202,10 @@ class MacroMixin(object):
                            "'end macro' to save it.")
         else:
             for mmm in self.macros:
-                self.info_line("    %s" % (mmm))
+                self.info_line("    %s" % mmm)
                 if show_content:
                     for line in self.macros[mmm]:
-                        self.info_line("      %s" % (line))
+                        self.info_line("      %s" % line)
         self.info_end("")
 
     def helps_list_macros(self):

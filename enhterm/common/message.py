@@ -85,4 +85,3 @@ class MessagesMixin(object):
         """Called on an input line when the command prefix is not recognized.
         """
         self.error('*** Unknown syntax: %s' % line)
-
