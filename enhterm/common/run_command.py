@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 """
-from __future__ import unicode_literals
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import logging
-from .lang import _
 
 logger = logging.getLogger('enhterm')
 

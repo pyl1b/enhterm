@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 """
-from __future__ import unicode_literals
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import logging
 import shlex
 import traceback
 from collections import OrderedDict
 
-from .lang import _
+from enhterm.lang import _
 
 logger = logging.getLogger('enhterm')
 

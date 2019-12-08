@@ -2,20 +2,20 @@
 """
 Generic enhanced terminal command loop.
 """
-from __future__ import unicode_literals
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import cmd
 import logging
 
-from .command import CommandMixin
-from .exit import ExitMixin
-from .help import HelpMixin
-from .macro import MacroMixin
-from .message import MessagesMixin
-from .run_command import RunCommandsMixin
-from .subcommand import SubcommandMixin
-from .log_level import LogLevelMixin
+from enhterm.common.command import CommandMixin
+from enhterm.common.exit import ExitMixin
+from enhterm.common.help import HelpMixin
+from enhterm.common.log_level import LogLevelMixin
+from enhterm.common.macro import MacroMixin
+from enhterm.common.message import MessagesMixin
+from enhterm.common.run_command import RunCommandsMixin
+from enhterm.common.subcommand import SubcommandMixin
 from .lang import _
 
 logger = logging.getLogger('enhterm')

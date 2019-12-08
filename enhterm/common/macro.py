@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 """
-from __future__ import unicode_literals
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import logging
 from collections import OrderedDict
 
-from .util import needs_name
-from .lang import _
+from enhterm.lang import _
+from enhterm.util import needs_name
 
 logger = logging.getLogger('enhterm')
 
