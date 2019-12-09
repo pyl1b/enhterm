@@ -29,7 +29,7 @@ class EnhTerm(MessagesMixin, ExitMixin, HelpMixin,
     Enhanced terminal.
 
     This is a base class you can use in your project to create a command loop.
-    It includes all mixins defined by the package. If you need fewer
+    It includes all common mixins defined by the package. If you need fewer
     mixins use this class as a template.
     """
     shortcuts = {'x': ('exit', '')}
@@ -42,7 +42,8 @@ class EnhTerm(MessagesMixin, ExitMixin, HelpMixin,
         self.prompt = '$: '
 
     def onecmd(self, line):
-        """Interpret the argument as though it had been typed in response
+        """
+        Interpret the argument as though it had been typed in response
         to the prompt.
         """
         should_exit, result = self.cmd_with_result(line)

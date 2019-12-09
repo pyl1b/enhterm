@@ -35,7 +35,7 @@ class CommandMixin(object):
         if cmd is None:
             return self.default(line), False
         self.lastcmd = line
-        if line == 'EOF' :
+        if line == 'EOF':
             self.lastcmd = ''
         if cmd == '':
             return self.default(line), False
