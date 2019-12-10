@@ -4,8 +4,10 @@ Contains the definition of the EnhTerm class.
 """
 import logging
 
+from enhterm.message import Message, TextParagraph
 from enhterm.provider import Provider
 from enhterm.watcher import Watcher
+from enhterm.watcher.echo import EchoWatcher
 
 logger = logging.getLogger('et')
 
@@ -63,7 +65,7 @@ class EnhTerm(object):
             raise ValueError("providers argument needs to be a list")
 
         if watchers is None:
-            self.watchers = []
+            self.watchers = [EchoWatcher()]
         elif isinstance(watchers, list):
             self.watchers = watchers
         elif isinstance(watchers, (set, tuple)):
@@ -415,3 +417,71 @@ class EnhTerm(object):
     @post_loop_state.setter
     def post_loop_state(self, value):
         self.state = POST_LOOP_STATE
+
+    def info(self, text, severity=logging.INFO):
+        """
+        Issue an informative message.
+
+        The method creates a :class:`~Message` with a single
+        :class:`~TextParagraph` which it forwards to :meth:`~issue_message`.
+
+        Arguments:
+            text (str):
+                The content of the message.
+            severity (int):
+                The severity of this message. One of the logging constants
+                can be used here.
+        """
+        message = Message(term=self, severity=severity, paragraphs=[
+            TextParagraph(text)
+        ])
+        self.issue_message(message)
+
+    def warning(self, text):
+        """
+        Issue a warning message.
+
+        The method creates a :class:`~Message` with a single
+        :class:`~TextParagraph` which it forwards to :meth:`~issue_message`.
+
+        Arguments:
+            text (str):
+                The content of the message.
+        """
+        message = Message(term=self, severity=logging.WARNING, paragraphs=[
+            TextParagraph(text)
+        ])
+        self.issue_message(message)
+
+    def error(self, text):
+        """
+        Issue an error message.
+
+        The method creates a :class:`~Message` with a single
+        :class:`~TextParagraph` which it forwards to :meth:`~issue_message`.
+
+        Arguments:
+            text (str):
+                The content of the message.
+        """
+        message = Message(term=self, severity=logging.ERROR, paragraphs=[
+            TextParagraph(text)
+        ])
+        self.issue_message(message)
+
+    def issue_message(self, message):
+        """
+        The terminal is issuing a message.
+
+        All the output destined to the user should go through this method.
+
+        Default implementation informs all watchers about the message.
+        """
+        for watcher in self.watchers:
+            try:
+                watcher.message_issued(message)
+            except (SystemExit, SystemError, KeyboardInterrupt):
+                raise
+            except Exception as exc:
+                self.handle_watcher_exception(watcher, 'message_issued', exc)
+        return

@@ -77,3 +77,13 @@ class Watcher(object):
                 The command that was executed.
         """
         pass
+
+    def message_issued(self, message):
+        """
+        The watcher is informed that the terminal has issued a message.
+
+        Arguments:
+            message (Message):
+                The message that was issued.
+        """
+        pass
