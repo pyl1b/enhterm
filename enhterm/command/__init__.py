@@ -7,10 +7,12 @@ from __future__ import print_function
 
 import logging
 
+from enhterm.base import EtBase
+
 logger = logging.getLogger('et.c')
 
 
-class Command(object):
+class Command(EtBase):
     """
     A command.
 

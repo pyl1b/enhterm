@@ -69,4 +69,4 @@ class EchoWatcher(Watcher):
         out = self.low_stream if message.severity < self.cutoff \
             else self.high_stream
         for par in message.paragraphs:
-            out.write(str(par).encode("utf-8"))
+            out.write(str(par))

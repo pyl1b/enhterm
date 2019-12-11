@@ -4,10 +4,12 @@ Contains the definition of the Provider class.
 """
 import logging
 
+from enhterm.base import EtBase
+
 logger = logging.getLogger('et.p')
 
 
-class Provider(object):
+class Provider(EtBase):
     """
     A class capable of providing command to the terminal.
 
@@ -55,6 +57,7 @@ class Provider(object):
                 The previous top provider that we're replacing as
                 active provider.
         """
+        pass
 
     def stop(self):
         """
@@ -86,3 +89,16 @@ class Provider(object):
         the provider.
         """
         pass
+
+    def get_command(self):
+        """
+        Retrieve next command to execute.
+
+        This method is only called when the provider is the active one.
+
+        Returns:
+            Command or None
+                The function must return either a command instance or None,
+                in which case the provider will be uninstalled.
+        """
+        raise NotImplementedError

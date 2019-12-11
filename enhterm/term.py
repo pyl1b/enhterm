@@ -27,7 +27,8 @@ class EnhTerm(object):
 
     """
 
-    def __init__(self, providers=None, watchers=None, *args, **kwargs):
+    def __init__(self, providers=None, watchers=None, prompt=None,
+                 *args, **kwargs):
         """
         Constructor.
 
@@ -52,9 +53,10 @@ class EnhTerm(object):
         """
         super().__init__(*args, **kwargs)
         self.should_stop = False
+        self.prompt = prompt if prompt else "> "
 
         if providers is None:
-            providers = [ConsoleProvider()]
+            providers = []
         elif isinstance(providers, list):
             pass
         elif isinstance(providers, (set, tuple)):
@@ -234,10 +236,10 @@ class EnhTerm(object):
                 The default implementation of :meth:`~cmd_loop`
                 will set `should_stop` flag which terminates command loop.
         """
-        if len(self.provider_stack) == 0:
-            return None
 
         while True:
+            if len(self.provider_stack) == 0:
+                return None
             provider = self.provider
 
             try:

@@ -4,10 +4,12 @@ Contains the definition of the Watcher class.
 """
 import logging
 
+from enhterm.base import EtBase
+
 logger = logging.getLogger('et.w')
 
 
-class Watcher(object):
+class Watcher(EtBase):
     """
     A base class for structures informed by the terminal about its events.
 
