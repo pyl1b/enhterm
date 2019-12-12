@@ -6,6 +6,7 @@ import logging
 
 from enhterm.message import Message, TextParagraph
 from enhterm.provider import Provider
+from enhterm.runner import Runner
 from enhterm.watcher import Watcher
 from enhterm.watcher.echo import EchoWatcher
 
@@ -27,8 +28,8 @@ class EnhTerm(object):
 
     """
 
-    def __init__(self, providers=None, watchers=None, prompt=None,
-                 *args, **kwargs):
+    def __init__(self, providers=None, watchers=None, runner=None,
+                 prompt=None, *args, **kwargs):
         """
         Constructor.
 
@@ -49,11 +50,16 @@ class EnhTerm(object):
                 :class:`~enhterm.watcher.Watcher` instances, as well as
                 a single :class:`~enhterm.watcher.Watcher`. By default
                 the value is `None`, so no watcher will be installed.
-
+            runner (Runner):
+                The class that takes a command and translates it into actions.
+                Default runner calls simply calls the
+                :meth:`~enhterm.command.Command.execute` method of the
+                :class:`~enhterm.command.Command`.
         """
         super().__init__(*args, **kwargs)
         self.should_stop = False
         self.prompt = prompt if prompt else "> "
+        self.runner = runner if runner else Runner()
 
         if providers is None:
             providers = []
@@ -274,7 +280,8 @@ class EnhTerm(object):
         """
         The method executes the next command.
 
-        Default implementation simply calls the
+        Default implementation asks the `runner` to execute the command.
+        Default :class:`~enhterm.runner.Runner` will call the
         :meth:`~enhterm.command.Command.execute` method of the
         :class:`~enhterm.command.Command`.
 
@@ -291,7 +298,7 @@ class EnhTerm(object):
         command.term = self
         if command.provider is None:
             command.provider = self.provider
-        return command.execute()
+        return self.runner(command)
 
     def install_provider(self, provider):
         """
