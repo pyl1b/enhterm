@@ -11,19 +11,14 @@ logger = logging.getLogger('et.noop')
 
 class NoOpCommand(Command):
     """
-    This class .
+    A command that does nothing.
 
-    Attributes:
-
+    When providers return `None` they get uninstalled from the terminal.
+    This is an alternative that keeps them alive.
     """
 
     def __init__(self, *args, **kwargs):
-        """
-        Constructor.
-
-        Arguments:
-
-        """
+        """ Constructor. """
         super().__init__(*args, **kwargs)
 
     def __str__(self):

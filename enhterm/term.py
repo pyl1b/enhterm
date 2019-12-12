@@ -104,26 +104,41 @@ class EnhTerm(object):
         self.pre_loop()
 
         while not self.should_stop:
-            self.get_command_state = True
-            command = self.get_command()
-            if command is None:
-                self.should_stop = True
-                break
-
-            self.pre_command_state = True
-            command = self.pre_cmd(command)
-            if command is None:
-                self.should_stop = True
-                break
-
-            self.execute_command_state = True
-            command.result = self.execute_command(command)
-            if not self.post_cmd(command):
-                self.should_stop = True
+            if not self.one_loop():
                 break
 
         self.post_loop_state = True
         self.post_loop()
+
+    def one_loop(self):
+        """
+        cmd_loop repeatedly call s this method.
+
+        Returns:
+            True
+                The loop should continue.
+            False
+                The loop should stop.
+        """
+        self.get_command_state = True
+        command = self.get_command()
+        if command is None:
+            self.should_stop = True
+            return False
+
+        self.pre_command_state = True
+        command = self.pre_cmd(command)
+        if command is None:
+            self.should_stop = True
+            return False
+
+        self.execute_command_state = True
+        command.result = self.execute_command(command)
+        if not self.post_cmd(command):
+            self.should_stop = True
+            return False
+
+        return True
 
     def pre_loop(self):
         """
