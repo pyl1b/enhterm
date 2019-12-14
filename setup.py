@@ -22,11 +22,14 @@ VERSION = None
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'argparse'
+    'u-msgpack-python'
 ]
 
 # What packages are optional?
 EXTRAS = {
+    'full': [
+        'argparse',
+    ],
     'dev': [
         'nose',
         'twine',
@@ -35,11 +38,17 @@ EXTRAS = {
         'sphinx_rtd_theme',
         'recommonmark',
         'm2r',
-        'coverage'
+        'coverage',
+        'argparse',
+        'appupup',
+        'p2p0mq'
     ],
     'tests': [
         'mock',
         'nose',
+        'argparse',
+        'appupup',
+        'p2p0mq',
     ],
 }
 

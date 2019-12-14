@@ -1,48 +1,19 @@
 # -*- coding: utf-8 -*-
 """
-Contains the definition of the NoOpCommand class.
+Contains the definition of the Serializable class.
 """
-import logging
-
-from enhterm.command import Command
-
-logger = logging.getLogger('et.unknown')
 
 
-class UnknownCommand(Command):
+class Serializable(object):
     """
-    This class .
-
-    Attributes:
-
+    Defines the methods that need to be implemented by serializable classes.
     """
 
-    def __init__(self, unknown_content=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         Constructor.
-
-        Arguments:
-
         """
         super().__init__(*args, **kwargs)
-        self.unknown_content = unknown_content
-
-    def __str__(self):
-        """ Represent this object as a human-readable string. """
-        return 'UnknownCommand()'
-
-    def __repr__(self):
-        """ Represent this object as a python constructor. """
-        return 'UnknownCommand()'
-
-    def execute(self):
-        """
-        Called by the command loop to do some work.
-
-        The return value will be deposited by the command loop it into
-        the `result` member.
-        """
-        return None
 
     def encode(self):
         """
@@ -52,7 +23,7 @@ class UnknownCommand(Command):
            The `result` and `uuid` members should not be serialized
            in case of :class:`~Command`.
         """
-        return self.unknown_content
+        raise NotImplementedError
 
     def decode(self, raw_data):
         """
@@ -71,7 +42,7 @@ class UnknownCommand(Command):
             raw_data (bytes):
                 The data to apply.
         """
-        self.unknown_content = raw_data
+        raise NotImplementedError
 
     @classmethod
     def class_id(cls):
@@ -82,4 +53,4 @@ class UnknownCommand(Command):
         be associated with a string
         (see :class:`enhterm.ser_deser.dsds.DictSerDeSer`).
         """
-        return 'unknown'
+        return f"{cls.__module__}.{cls.__name__}"

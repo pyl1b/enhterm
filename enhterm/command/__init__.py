@@ -2,17 +2,16 @@
 """
 Contains the definition of the Command class.
 """
-from __future__ import unicode_literals
-from __future__ import print_function
-
 import logging
+from uuid import uuid4
 
 from enhterm.base import EtBase
+from enhterm.mixins.serializable import Serializable
 
 logger = logging.getLogger('et.c')
 
 
-class Command(EtBase):
+class Command(Serializable, EtBase):
     """
     A command.
 
@@ -36,6 +35,8 @@ class Command(EtBase):
             active provider if it is found to be `None` prior to :meth:`~execute`.
         result:
             The result of :meth:`~execute`, `None` until then.
+        uuid:
+            Unique identifier of this instance.
     """
 
     def __init__(self, term=None, provider=None, *args, **kwargs):
@@ -44,6 +45,7 @@ class Command(EtBase):
         self.term = term
         self.provider = provider
         self.result = None
+        self.uuid = uuid4()
 
     def __str__(self):
         """ Represent this object as a human-readable string. """

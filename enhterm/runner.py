@@ -7,10 +7,12 @@ from __future__ import print_function
 
 import logging
 
-logger = logging.getLogger('Runner ')
+from enhterm.base import EtBase
+
+logger = logging.getLogger('et.runner')
 
 
-class Runner(object):
+class Runner(EtBase):
     """
     The class that receives the command and performs some
     actions with it.

@@ -4,6 +4,8 @@ Contains the definition of the EnhTerm class.
 """
 import logging
 
+from enhterm.base import EtBase
+from enhterm.ser_deser import SerDeSer
 from enhterm.message import Message, TextParagraph
 from enhterm.provider import Provider
 from enhterm.runner import Runner
@@ -20,7 +22,7 @@ EXEC_COMMAND_STATE = 4
 POST_LOOP_STATE = -1
 
 
-class EnhTerm(object):
+class EnhTerm(EtBase):
     """
     This class .
 
@@ -29,7 +31,7 @@ class EnhTerm(object):
     """
 
     def __init__(self, providers=None, watchers=None, runner=None,
-                 prompt=None, *args, **kwargs):
+                 prompt=None, command_registry=None, *args, **kwargs):
         """
         Constructor.
 
@@ -55,11 +57,15 @@ class EnhTerm(object):
                 Default runner calls simply calls the
                 :meth:`~enhterm.command.Command.execute` method of the
                 :class:`~enhterm.command.Command`.
+            command_registry (SerDeSer):
+                Intermediary for packing and unpacking commands.
         """
         super().__init__(*args, **kwargs)
         self.should_stop = False
         self.prompt = prompt if prompt else "> "
-        self.runner = runner if runner else Runner()
+        self.runner = runner if runner else Runner(term=self)
+        self.command_registry = command_registry \
+            if command_registry else SerDeSer(term=self)
 
         if providers is None:
             providers = []

@@ -3,14 +3,15 @@
 Contains the definition of the Message class.
 """
 import logging
-from collections import OrderedDict
 
 from enhterm.base import EtBase
+from enhterm.errors import DecodeError
+from enhterm.mixins.serializable import Serializable
 
 logger = logging.getLogger('et.m')
 
 
-class Paragraph(EtBase):
+class Paragraph(Serializable, EtBase):
     """ A paragraph in a message. """
     def __init__(self, message=None, *args, **kwargs):
         """
@@ -20,6 +21,7 @@ class Paragraph(EtBase):
             message (Message):
                 The message where this paragraph belongs to.
         """
+        self.message = message
         super().__init__(*args, **kwargs)
 
 
@@ -43,6 +45,42 @@ class TextParagraph(Paragraph):
     def __repr__(self):
         """ Represent this object as a python constructor. """
         return f'TextParagraph({self.text})'
+
+    def encode(self):
+        """
+        Called when a command needs to be serialized.
+
+        .. note:
+           The `result` and `uuid` members should not be serialized
+           in case of :class:`~Command`.
+        """
+        return self.text
+
+    def decode(self, raw_data):
+        """
+        Apply raw data to this instance.
+
+        It is asserted that correct class has already been constructed
+        and that it has `result` and `uuid` members set in case of
+        :class:`~Command`..
+
+        Arguments:
+            raw_data (bytes):
+                The data to apply.
+        """
+        assert isinstance(raw_data, str)
+        self.text = raw_data
+
+    @classmethod
+    def class_id(cls):
+        """
+        A unique identifier of the class of the command.
+
+        This value is used as a key when a constructor needs to
+        be associated with a string
+        (see :class:`enhterm.ser_deser.dsds.DictSerDeSer`).
+        """
+        return 'text'
 
 
 class Message(EtBase):
@@ -85,3 +123,43 @@ class Message(EtBase):
     def __repr__(self):
         """ Represent this object as a python constructor. """
         return 'Message()'
+
+    def encode(self, encoder):
+        """
+        Called when a message needs to be serialized.
+
+        Arguments:
+            encoder (SerDeSer):
+                The instance that is encoding this message.
+        """
+        return self.severity, [
+            encoder.encode_paragraph(par) for par in self.paragraphs]
+
+    def decode(self, raw_data, decoder):
+        """
+        Apply raw data to this instance.
+
+        It is asserted that correct class ahs already been constructed
+        and that it has `result` and `uuid` members set.
+
+        Raises:
+            DecodeError:
+                Any problem in parsing this data is reported using
+                this exception.
+
+        Arguments:
+            raw_data (list):
+                The data to apply.
+            decoder (SerDeSer):
+                The instance that is decoding this message.
+        """
+        if len(raw_data) != 2:
+            raise DecodeError(f"Expected 2 elements, received {len(raw_data)}")
+
+        self.severity = int(raw_data[0])
+        if self.severity <= 0:
+            raise DecodeError(f"Severity should be positive, "
+                              f"not {self.severity}")
+
+        for raw_par in raw_data[1]:
+            self.paragraphs.append(decoder.decode_paragraph(raw_par))
