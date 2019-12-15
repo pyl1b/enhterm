@@ -49,11 +49,13 @@ class Command(Serializable, EtBase):
 
     def __str__(self):
         """ Represent this object as a human-readable string. """
-        return 'Command()'
+        return f'Command({self.uuid})'
 
     def __repr__(self):
         """ Represent this object as a python constructor. """
-        return 'Command()'
+        return f'Command(term={self.term}, ' \
+            f'provider={self.provider}, ' \
+            f'result={self.result}, uuid={self.uuid})'
 
     def execute(self):
         """

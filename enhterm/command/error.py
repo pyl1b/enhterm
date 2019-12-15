@@ -36,11 +36,15 @@ class ErrorCommand(Command):
 
     def __str__(self):
         """ Represent this object as a human-readable string. """
-        return 'ErrorCommand()'
+        return f'ErrorCommand({self.message})'
 
     def __repr__(self):
         """ Represent this object as a python constructor. """
-        return 'ErrorCommand()'
+        return f'ErrorCommand(term={self.term}, ' \
+            f'provider={self.provider}, ' \
+            f'result={self.result}, ' \
+            f'uuid={self.uuid}, ' \
+            f'message={self.message})'
 
     def encode(self):
         """
