@@ -66,7 +66,7 @@ class RemoteRunner(Runner):
 
         # Create and post a message.
         message = self.concern.compose(peer=self.peer, command=command)
-        self.zmq_app.medium_queue.enqueue(message)
+        self.zmq_app.sender.medium_queue.enqueue(message)
 
         # Wait for it to return.
         for i in range(self.timeout*2):
@@ -78,12 +78,16 @@ class RemoteRunner(Runner):
             self.timed_out()
             return None
 
+        sent_command, messages = reply
+        assert sent_command == command
+
         # Print all messages captured on the remote.
-        for message in reply.messages:
-            self.term.issue_message(message)
+        if messages is not None:
+            for message in messages:
+                self.term.issue_message(message)
 
         # And return the result provided by the remote.
-        return reply.result
+        return sent_command.result
 
     @property
     def concern(self):

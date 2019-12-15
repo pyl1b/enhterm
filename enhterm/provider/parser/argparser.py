@@ -3,7 +3,7 @@
 Contains the definition of the ArgParser class.
 """
 import logging
-from argparse import ArgumentParser, ArgumentError
+from argparse import ArgumentParser, ArgumentError, Namespace
 import shlex
 
 from enhterm.command import Command
@@ -18,23 +18,28 @@ class ArgParseCommand(Command):
     """
     A command returned by our parser.
     """
-    def __init__(self, parsed, *args, **kwargs):
+    def __init__(self, parsed=None, *args, **kwargs):
         """ Constructor. """
         super().__init__(*args, **kwargs)
         self.parsed = parsed
-        self.call_me = parsed.func
-        del parsed.__dict__['func']
+        if parsed is not None:
+            self.call_me = parsed.func
+            del parsed.__dict__['func']
 
-        if hasattr(parsed, 'command'):
-            # Because we set the dest parameter to 'command' a
-            # command attribute is set, with the value of the
-            # name of the subparser.
-            self.command_name = parsed.command
-            del parsed.__dict__['command']
+            if hasattr(parsed, 'command'):
+                # Because we set the dest parameter to 'command' a
+                # command attribute is set, with the value of the
+                # name of the subparser.
+                self.command_name = parsed.command
+                del parsed.__dict__['command']
+            else:
+                # When a subparser was not set or was set but without
+                # dest argument.
+                self.command_name = None
         else:
-            # When a subparser was not set or was set but without
-            # dest argument.
             self.command_name = None
+            self.call_me = None
+
 
     def __str__(self):
         """ Represent this object as a human-readable string. """
@@ -52,6 +57,48 @@ class ArgParseCommand(Command):
         the `result` member.
         """
         return self.call_me(command=self, **self.parsed.__dict__)
+
+    def encode(self):
+        """
+        Called when a class instance needs to be serialized.
+
+        .. note:
+           The `result` and `uuid` members should not be serialized
+           in case of :class:`~Command`.
+        """
+        return self.command_name, self.parsed.__dict__
+
+    def decode(self, raw_data):
+        """
+        Apply raw data to this instance.
+
+        It is asserted that correct class has already been constructed
+        and that it has `result` and `uuid` members set in case of
+        :class:`~Command`..
+
+        Raises:
+            DecodeError:
+                The implementation should raise this class or a
+                subclass of it.
+
+        Arguments:
+            raw_data (bytes):
+                The data to apply.
+        """
+        assert len(raw_data) == 2
+        self.command_name, self.parsed = raw_data
+        self.parsed = Namespace(**self.parsed)
+
+    @classmethod
+    def class_id(cls):
+        """
+        A unique identifier of the class.
+
+        This value is used as a key when a constructor needs to
+        be associated with a string
+        (see :class:`enhterm.ser_deser.dsds.DictSerDeSer`).
+        """
+        return "argparse"
 
 
 class ParserError(Exception):

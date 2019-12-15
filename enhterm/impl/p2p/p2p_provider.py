@@ -43,4 +43,4 @@ class RemoteProvider(QueueProvider):
     @property
     def concern(self):
         """ Get the concern that mediates message transport. """
-        return self.zmq_app.concerns['terminal']
+        return self.zmq_app.concerns[b'et']

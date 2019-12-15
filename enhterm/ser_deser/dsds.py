@@ -7,6 +7,10 @@ from uuid import UUID
 
 import umsgpack
 
+from enhterm.command.error import ErrorCommand
+from enhterm.command.noop import NoOpCommand
+from enhterm.command.quit import QuitCommand
+from enhterm.command.unknown import UnknownCommand
 from enhterm.errors import CommandDecodeError, DecodeError
 from enhterm.message import Message
 from enhterm.ser_deser import SerDeSer
@@ -41,6 +45,11 @@ class DictSerDeSer(SerDeSer):
         self._paragraph_registry = {}
         super().__init__(*args, **kwargs)
 
+        self.add_command_class(ErrorCommand)
+        self.add_command_class(NoOpCommand)
+        self.add_command_class(QuitCommand)
+        self.add_command_class(UnknownCommand)
+
     def __str__(self):
         """ Represent this object as a human-readable string. """
         return 'DictSerDeSer()'
@@ -61,9 +70,11 @@ class DictSerDeSer(SerDeSer):
                 a string of bytes
         """
 
-        return umsgpack.packb(
-            command.class_id(), command.uuid.int,
-            command.encode())
+        return umsgpack.packb((
+            command.class_id(),
+            command.uuid.bytes,
+            command.encode()
+        ))
 
     def unpack_command(self, raw_data):
         """
@@ -94,13 +105,13 @@ class DictSerDeSer(SerDeSer):
         constructor = self._command_registry.get(class_id, None)
         if constructor is None:
             raise CommandDecodeError(
-                f"Class id {class_id} is not present in internal registry",
+                f"Class id '{class_id}' is not present in internal registry",
                 class_id, uuid, raw_data
             )
 
         result = constructor()
         result.result = None
-        result.uuid = UUID(int=uuid, version=4)
+        result.uuid = UUID(bytes=uuid, version=4)
         result.decode(raw_data)
 
         return result
@@ -119,9 +130,10 @@ class DictSerDeSer(SerDeSer):
             bytes:
                 a string of bytes
         """
-        return umsgpack.packb(
-            command.class_id(), command.uuid.int, command.result,
-            [message.encode(self) for message in messages])
+        return umsgpack.packb((
+            command.class_id(), command.uuid.bytes, command.result,
+            [message.encode(self) for message in messages]
+        ))
 
     def unpack_result(self, raw_data):
         """
@@ -153,6 +165,7 @@ class DictSerDeSer(SerDeSer):
                 f"Packed data should have 4 members, found {len(raw_data)}")
 
         class_id, uuid, result, raw_messages = raw_data
+        # Note: UUID(bytes=uuid, version=4)
         messages = []
         for raw_message in raw_messages:
             message = Message()

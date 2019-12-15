@@ -98,3 +98,8 @@ class QueueProvider(Provider):
                 return None
             else:
                 return self.on_empty(provider=self)
+
+    def enqueue_command(self, command):
+        """ Adds a command to the internal list. """
+        command.provider = self
+        self.queue.put(command)

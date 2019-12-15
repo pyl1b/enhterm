@@ -28,6 +28,8 @@ class RemoteWatcher(Watcher):
 
         """
         self.provider = provider
+        self.active_command = None
+        self.messages = []
         super().__init__(*args, **kwargs)
 
     def __str__(self):
@@ -38,6 +40,14 @@ class RemoteWatcher(Watcher):
         """ Represent this object as a python constructor. """
         return 'RemoteWatcher()'
 
+    def command_completed(self):
+        """ Called to complete a command. """
+        if self.active_command is None:
+            return
+
+        self.provider.concern.post_reply(self.active_command, self.messages)
+        self.messages = []
+
     def pre_cmd(self, command):
         """
         The watcher is informed that the terminal is about to execute a command.
@@ -46,7 +56,9 @@ class RemoteWatcher(Watcher):
             command (Command):
                 The command to be executed.
         """
-        pass
+        self.command_completed()
+        if command.provider == self.provider:
+            self.active_command = command
 
     def post_cmd(self, command):
         """
@@ -58,7 +70,9 @@ class RemoteWatcher(Watcher):
             command (Command):
                 The command that was executed.
         """
-        pass
+        if self.active_command is not None:
+            if self.active_command.provider == self.provider:
+                self.command_completed()
 
     def message_issued(self, message):
         """
