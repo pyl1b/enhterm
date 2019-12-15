@@ -1,46 +1,52 @@
 # -*- coding: utf-8 -*-
 """
-Contains the definition of the ErrorCommand class.
+Contains the definition of the NoOpCommand class.
 """
 import logging
 
-from enhterm.command import Command
 from enhterm.command.noop import NoOpCommand
 
 logger = logging.getLogger('et.error')
 
 
-class ErrorCommand(Command):
+class TextCommand(NoOpCommand):
     """
-    This class indicates that an error condition appeared.
+    This class stores some textul input
 
     Providers return this command (essentially a
-    :class:`~NoOpCommand`) to indicate that they have failed to
-    retrieve the command.
+    :class:`~NoOpCommand`) in cases when parsing happens elsewhere.
+
+    When used with :class:`~DictSerDeSer`, the receiver should use
+    something like:
+
+    >>> from enhterm.ser_deser.dsds import DictSerDeSer
+    >>> encoder = DictSerDeSer()
+    >>> encoder.add_command_class(
+    >>>     constructor=argparse_from_text, class_id=TextCommand.class_id())
 
     Attributes:
-        message (str):
-            An optional error message describing what went wrong.
+        content (str):
+            The textual representation of the command.
     """
 
-    def __init__(self, message=None, *args, **kwargs):
+    def __init__(self, content=None, *args, **kwargs):
         """
         Constructor.
 
         Arguments:
-            message (str):
-                An optional error message describing what went wrong.
+            content (str):
+                The textual representation of the command.
         """
         super().__init__(*args, **kwargs)
-        self.message = message if message else ''
+        self.content = content if content else ''
 
     def __str__(self):
         """ Represent this object as a human-readable string. """
-        return 'ErrorCommand()'
+        return f'TextCommand("{self.content}")'
 
     def __repr__(self):
         """ Represent this object as a python constructor. """
-        return 'ErrorCommand()'
+        return f'TextCommand(content="{self.content}")'
 
     def encode(self):
         """
@@ -50,7 +56,7 @@ class ErrorCommand(Command):
            The `result` and `uuid` members should not be serialized
            in case of :class:`~Command`.
         """
-        return self.message
+        return self.content
 
     def decode(self, raw_data):
         """
@@ -61,7 +67,7 @@ class ErrorCommand(Command):
         :class:`~Command`..
 
         Raises:
-            DecodeError:
+            DecodeText:
                 The implementation should raise this class or a
                 subclass of it.
 
@@ -70,7 +76,7 @@ class ErrorCommand(Command):
                 The data to apply.
         """
         assert isinstance(raw_data, str)
-        self.message = raw_data
+        self.content = raw_data
 
     @classmethod
     def class_id(cls):
@@ -81,14 +87,4 @@ class ErrorCommand(Command):
         be associated with a string
         (see :class:`enhterm.ser_deser.dsds.DictSerDeSer`).
         """
-        return 'error'
-
-    def execute(self):
-        """
-        Called by the command loop to do some work.
-
-        The return value will be deposited by the command loop it into
-        the `result` member.
-        """
-        self.term.error(self.message)
-        return None
+        return 'text'

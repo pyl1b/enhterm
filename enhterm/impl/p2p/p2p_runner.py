@@ -10,6 +10,7 @@ from time import sleep
 
 from p2p0mq.peer import Peer
 
+from enhterm.command.text import TextCommand
 from enhterm.runner import Runner
 
 logger = logging.getLogger('et.runrem')
@@ -63,6 +64,8 @@ class RemoteRunner(Runner):
             command (Command):
                 The command to execute.
         """
+        if not isinstance(command, TextCommand):
+            return command.execute()
 
         # Create and post a message.
         message = self.concern.compose(peer=self.peer, command=command)

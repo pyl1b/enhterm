@@ -69,4 +69,17 @@ class EchoWatcher(Watcher):
         out = self.low_stream if message.severity < self.cutoff \
             else self.high_stream
         for par in message.paragraphs:
-            out.write(str(par))
+            out.write(str(par) + "\n")
+
+    def post_cmd(self, command):
+        """
+        The watcher is informed that the terminal has executed a command.
+
+        At this point the result is set in the command structure.
+
+        Arguments:
+            command (Command):
+                The command that was executed.
+        """
+        if command.result is not None:
+            self.low_stream.write(str(command.result) + "\n")

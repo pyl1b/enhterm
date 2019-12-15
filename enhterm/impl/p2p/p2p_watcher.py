@@ -47,6 +47,7 @@ class RemoteWatcher(Watcher):
 
         self.provider.concern.post_reply(self.active_command, self.messages)
         self.messages = []
+        self.active_command = None
 
     def pre_cmd(self, command):
         """
@@ -82,4 +83,5 @@ class RemoteWatcher(Watcher):
             message (Message):
                 The message that was issued.
         """
-        pass
+        if self.active_command is not None:
+            self.messages.append(message)

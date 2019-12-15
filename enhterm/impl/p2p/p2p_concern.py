@@ -61,7 +61,8 @@ class RemoteConcern(Concern):
     def process_request(self, message):
         command = self.encoder.unpack_command(
             message.payload['command_content'])
-        self.received_commands[command.uuid] = (message, command, message.create_reply())
+        self.received_commands[command.uuid] = (
+            message, command, message.create_reply())
         self.provider.enqueue_command(command)
 
     def post_reply(self, command, messages):
@@ -69,8 +70,10 @@ class RemoteConcern(Concern):
             initial_message, saved_command, reply = \
                 self.received_commands[command.uuid]
         except KeyError:
-            logger.error("Post reply for a command we haven't see: %r", command)
+            logger.error(
+                "Post reply for a command we haven't seen: %r", command)
             return
+        del self.received_commands[command.uuid]
         reply.payload['result'] = self.encoder.pack_result(command, messages)
         self.provider.zmq_app.sender.medium_queue.enqueue(reply)
 
@@ -96,4 +99,6 @@ class RemoteConcern(Concern):
         if messages is not None:
             if remove_on_success:
                 del self.sent_messages[message.message_id]
-        return command, messages
+            return command, messages
+        else:
+            return None

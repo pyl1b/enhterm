@@ -10,9 +10,10 @@ import umsgpack
 from enhterm.command.error import ErrorCommand
 from enhterm.command.noop import NoOpCommand
 from enhterm.command.quit import QuitCommand
+from enhterm.command.text import TextCommand
 from enhterm.command.unknown import UnknownCommand
 from enhterm.errors import CommandDecodeError, DecodeError
-from enhterm.message import Message
+from enhterm.message import Message, TextParagraph
 from enhterm.ser_deser import SerDeSer
 
 logger = logging.getLogger('et.sds')
@@ -49,6 +50,9 @@ class DictSerDeSer(SerDeSer):
         self.add_command_class(NoOpCommand)
         self.add_command_class(QuitCommand)
         self.add_command_class(UnknownCommand)
+        self.add_command_class(TextCommand)
+
+        self.add_paragraph_class(TextParagraph)
 
     def __str__(self):
         """ Represent this object as a human-readable string. """

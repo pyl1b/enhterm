@@ -63,9 +63,16 @@ class EnhTerm(EtBase):
         super().__init__(*args, **kwargs)
         self.should_stop = False
         self.prompt = prompt if prompt else "> "
-        self.runner = runner if runner else Runner(term=self)
-        self.command_registry = command_registry \
-            if command_registry else SerDeSer(term=self)
+        if runner:
+            self.runner = runner
+            self.runner.term = self
+        else:
+            self.runner = Runner(term=self)
+        if command_registry:
+            self.command_registry = runner
+            self.command_registry.term = self
+        else:
+            self.command_registry = SerDeSer(term=self)
 
         if providers is None:
             providers = []
@@ -74,6 +81,7 @@ class EnhTerm(EtBase):
         elif isinstance(providers, (set, tuple)):
             providers = [provider for provider in providers]
         elif isinstance(providers, Provider):
+            providers.term = self
             providers = [providers]
         else:
             raise ValueError("providers argument needs to be a list")
@@ -94,6 +102,9 @@ class EnhTerm(EtBase):
         self.provider_stack = []
         for provider in providers:
             self.install_provider(provider)
+        for watcher in self.watchers:
+            watcher.term = self
+
 
     def __str__(self):
         """ Represent this object as a human-readable string. """

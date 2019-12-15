@@ -9,7 +9,12 @@ import shlex
 from enhterm.command import Command
 from enhterm.command.error import ErrorCommand
 from enhterm.command.noop import NoOpCommand
+from enhterm.command.text import TextCommand
+from enhterm.impl.p2p.p2p_provider import RemoteProvider
+from enhterm.provider import Provider
 from enhterm.provider.parser import Parser
+from enhterm.provider.queue_provider import QueueProvider
+from enhterm.provider.text_provider import TextProvider
 
 logger = logging.getLogger('et.argparser')
 
@@ -39,7 +44,6 @@ class ArgParseCommand(Command):
         else:
             self.command_name = None
             self.call_me = None
-
 
     def __str__(self):
         """ Represent this object as a human-readable string. """
@@ -246,3 +250,37 @@ class ArgParser(ArgumentParser, Parser):
         if message:
             assert file is None
             self.provider.term.info(message)
+
+
+class ArgparseRemoteProvider(RemoteProvider):
+    """
+    A provider that simply takes the text and creates a text command for it.
+    """
+
+    def __init__(self, parser=None, *args, **kwargs):
+        """
+        Constructor.
+        """
+        super().__init__(*args, **kwargs)
+        if parser:
+            self.parser = parser
+            parser.provider = self
+        else:
+            self.parser = ArgParser(provider=self)
+
+    def __str__(self):
+        """ Represent this object as a human-readable string. """
+        return 'ArgparseRemoteProvider()'
+
+    def __repr__(self):
+        """ Represent this object as a python constructor. """
+        return 'ArgparseRemoteProvider()'
+
+    def enqueue_command(self, command):
+        """ Adds a command to the internal list. """
+        assert isinstance(command, TextCommand)
+        new_command = self.parser.parse(command.content)
+        new_command.provider = self
+        new_command.uuid = command.uuid
+        self.queue.put(new_command)
+        return new_command
