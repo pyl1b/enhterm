@@ -24,7 +24,14 @@ class RemoteRunner(Runner):
     will send it back here.
 
     Attributes:
-
+        zmq_app (LocalPeer):
+            The structure where we post our messages.
+        timeout (int):
+            Seconds to wait for the reply.
+        peer (Peer or type or str):
+            Can be either a :class:`Peer` instance or a peer id (in
+            this case the `zmq_app` is required as it will be searched
+            for in it).
     """
 
     def __init__(self, zmq_app, timeout=4, peer=None, *args, **kwargs):
@@ -60,6 +67,24 @@ class RemoteRunner(Runner):
         """
         Execute the command.
 
+        The call only sends :class:`~TextCommand' and its subclasses.
+        Any other command is executed by calling its
+        `meth`:~Command.execute` method and the result is returned directly.
+
+        The :class:`~RemoteConcern` class is used to construct a message
+        from the command
+        then we place the message in the queue and wait for a result for a
+        certain number of seconds decided by the `timeout` member.
+
+        In case of timeout the :meth:`~timed_out` method is called
+        (which raises a :class:`TimeoutError` by default) and `None`
+        is returned.
+
+        The :class:`~RemoteConcern` returns the messages that were
+        issued while running the command, and which are re-issued in
+        this context. The result of the call is the result of the
+        command in the remote context.
+
         Arguments:
             command (Command):
                 The command to execute.
@@ -72,7 +97,7 @@ class RemoteRunner(Runner):
         self.zmq_app.sender.medium_queue.enqueue(message)
 
         # Wait for it to return.
-        for i in range(self.timeout*2):
+        for i in range(int(self.timeout*2)):
             reply = self.concern.get_reply(message)
             if reply is not None:
                 break
@@ -94,8 +119,22 @@ class RemoteRunner(Runner):
 
     @property
     def concern(self):
-        """ Get the concern that mediates message transport. """
+        """
+        Get the concern that mediates message transport.
+
+        It is asserted that the :class:`~LocalPeer` installed in the instance
+        has a concern which exports the `et` message type (
+        """
         return self.zmq_app.concerns[b'et']
 
     def timed_out(self):
+        """
+        Called when executing a command takes longer than anticipated.
+
+        Default implementation raises a :class:TimeoutError`
+        exception. Re-implement it to do something else.
+
+        It is safe for the function to return
+        (:meth:`__call__` returns `None` in that case).
+        """
         raise TimeoutError
