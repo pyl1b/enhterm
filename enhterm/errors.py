@@ -22,3 +22,8 @@ class CommandDecodeError(DecodeError):
         self.uuid = uuid
         self.raw_data = raw_data
         super().__init__(message)
+
+
+class QuitError(Exception):
+    """ :meth:`~parse` should return a :class:`~QuitCommand`."""
+    pass

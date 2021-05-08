@@ -11,6 +11,8 @@ from enhterm.provider import Provider
 from enhterm.runner import Runner
 from enhterm.watcher import Watcher
 from enhterm.watcher.echo import EchoWatcher
+from enhterm.errors import QuitError
+
 
 logger = logging.getLogger('et')
 
@@ -244,6 +246,7 @@ class EnhTerm(EtBase):
             False
                 The loop should stop.
         """
+        
         self.get_command_state = True
         command = self.get_command()
         if command is None:
@@ -257,7 +260,13 @@ class EnhTerm(EtBase):
             return False
 
         self.execute_command_state = True
-        command.result = self.execute_command(command)
+        try:
+            command.result = self.execute_command(command)
+        except QuitError:
+            self.post_cmd(command)
+            self.should_stop = True
+            return False
+
         if not self.post_cmd(command):
             self.should_stop = True
             return False
