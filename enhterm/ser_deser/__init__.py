@@ -11,8 +11,18 @@ logger = logging.getLogger('et.sds')
 
 class SerDeSer(EtBase):
     """
-    Serialize and de-serialize commands.
+    Serialize and de-serialize commands and messages.
 
+    The class defines the interface that needs to be implemented
+    by classes used for converting commands and paragraphs in messages
+    into strings of bytes.
+    
+    The approach for the command is to directly create the bytes
+    array. Paragraphs, on the other hand, are just converted to simple types
+    and converting them to bytes is outside tje scope of this class.
+    The reverse process also works on bytes for commands and on
+    basic types for paragraphs.
+    
     Attributes:
         term (EnhTerm):
             The terminal where this registry belongs.

@@ -24,27 +24,123 @@ POST_LOOP_STATE = -1
 
 class EnhTerm(EtBase):
     """
-    This class .
+    Command interpreter.
+
+    The command interpreter implementation is intended to be flexible,
+    allowing customisation of individual parts while keeping the rest
+    in place. Most of the tasks have an interface class that defines required
+    methods and some implementations for common use cases.
+
+    With flexibility in mind the methods of this class perform specific
+    duties and can easily be reimplemented in a subclass:
+    * :meth:`~cmd_loop` represents the main loop; re-implement if you \
+      need complete control over it.
+    * :meth:`~pre_loop` and :meth:`~post_loop` are called once each by \
+      default implementation of :meth:`~cmd_loop`.
+    * :meth:`~one_loop` represents a singly cycle in the main loop and will \
+      call:
+      * :meth:`~get_command` to retrieve next command;
+      * :meth:`~pre_cmd` before executing the retrieved command;
+      * :meth:`~execute_command` for obvious reasons;
+      * :meth:`~post_cmd` after executing the command;
+
+    Commands
+    --------
+
+    Each command to be executed is a subclass of the :class:`~Command` class.
+    The interface is very simple, expecting the implementation to
+    provide an :meth:`enhterm.command.Command.execute` method.
+
+    For use cases when the commands are to be transmitted or stored
+    the implementation also needs to have a
+    :meth:`~enhterm.mixins.serializable.Serializable.class_id`, an
+    :meth:`~enhterm.mixins.serializable.Serializable.encode` and a
+    :meth:`~enhterm.mixins.serializable.Serializable.decode`.
+
+    Providers
+    ---------
+
+    The interpreter relies on a stream of commands from a
+    :class:`~Provider` class. Providers are arranged in a stack, with the
+    top one being the active provider. Internally, the :meth:`~cmd_loop` method
+    will repeatedly call the active provider to ask for next command.
+
+    The class can be initialized with a list of providers in the constructor
+    and more can be added later via :meth:`~install_provider`. Removing
+    a provider is equally simple using :meth:`~uninstall_provider`.
+
+    If a :class:`~Provider` returns `None` when asked for a command it
+    will be automatically uninstalled and previous provider in the stack
+    will be un-paused. For cases when the provider doesn't have a command
+    to return and it cannot block for some reason it should return the
+    :class:`~NoOpCommand` command.
+
+    Messages
+    --------
+
+    In order to allow for various output formats and other features the code
+    does not print directly to the console using traditional means
+    such as `print` or `stdout`. Instead messages are being composed from
+    a list of paragraphs and are forwarded to the command interpreter
+    using the :meth:`~issue_message` method. Convenience methods
+    such as :meth:`~info`, :meth:`~error` or :meth:`~warning` will create
+    simple messages out of strings.
+
+    Watchers
+    --------
+
+    Events received by the command interpreter are forwarded to special
+    classes called watchers. The list of events includes the moment when
+    main loop starts and ends, commands beginning and ending execution
+    and a message being issued.
+
+    In a simple implementation a message being issued while a command
+    executes is received using :meth:`~issue_message` which informs
+    the :class:`~EchoWatcher`, which prints the message to standard output.
+
+    Packing and Unpacking
+    ---------------------
+
+    For times when a command interpreter sends the commands to another
+    memory space for execution or when commands or messages need to be
+    stored and recreated later the command interpreter can host a
+    :class:`~SerDeSer` instance.
 
     Attributes:
-
+        should_stop(bool):
+            If set the main loop will be terminated when current cycle
+            is completed.
+        prompt (str):
+            The text to present to the user on each command line.
+        runner (Runner):
+            The class that takes a command and translates it into actions.
+            Default runner calls simply calls the
+            :meth:`~enhterm.command.Command.execute` method of the
+            :class:`~enhterm.command.Command`.
+        provider_stack (list):
+            The stack of providers, with the last one in the list being the
+            active one (use :meth:`~provider` to retrieve it).
+        watchers (list):
+            The list of watchers to be informed about events of this
+            command interpreter.
+        ser_deser (SerDeSer):
+            Intermediary for packing and unpacking commands.
     """
 
     def __init__(self, providers=None, watchers=None, runner=None,
-                 prompt=None, command_registry=None, *args, **kwargs):
+                 prompt=None, ser_deser=None, *args, **kwargs):
         """
         Constructor.
 
         Arguments:
-            providers (list of Provider):
+            providers (list of Provider, Provider):
                 Subclasses of :class:`~enhterm.provider.Provider` which
                 provide commands to be executed. For convenience the
                 constructor also accepts sets and tuples of
                 :class:`~enhterm.provider.Provider` instances, as well as
                 a single :class:`~enhterm.provider.Provider`. By default
-                the value is `None` and the constructor will create a
-                :class:`~enhterm.console_provider.ConsoleProvider`.
-                The constructor installs the providers provided in this list.
+                the value is `None`.
+                The constructor installs the providers in this list (calls install_provider).
             watchers (list of Watcher):
                 Subclasses of :class:`~enhterm.watcher.Watcher` which
                 are informed about events in this class. For convenience the
@@ -57,22 +153,24 @@ class EnhTerm(EtBase):
                 Default runner calls simply calls the
                 :meth:`~enhterm.command.Command.execute` method of the
                 :class:`~enhterm.command.Command`.
-            command_registry (SerDeSer):
+            ser_deser (SerDeSer):
                 Intermediary for packing and unpacking commands.
         """
         super().__init__(*args, **kwargs)
         self.should_stop = False
         self.prompt = prompt if prompt else "> "
+
         if runner:
             self.runner = runner
             self.runner.term = self
         else:
             self.runner = Runner(term=self)
-        if command_registry:
-            self.command_registry = runner
-            self.command_registry.term = self
+
+        if ser_deser:
+            self.ser_deser = ser_deser
+            self.ser_deser.term = self
         else:
-            self.command_registry = SerDeSer(term=self)
+            self.ser_deser = SerDeSer(term=self)
 
         if providers is None:
             providers = []
@@ -105,7 +203,6 @@ class EnhTerm(EtBase):
         for watcher in self.watchers:
             watcher.term = self
 
-
     def __str__(self):
         """ Represent this object as a human-readable string. """
         return 'EnhTerm()'
@@ -121,7 +218,11 @@ class EnhTerm(EtBase):
 
     def cmd_loop(self):
         """
-        Repeatedly get a command and execute it.
+        Repeatedly get a command and execute it (main loop).
+
+        The method executes one :meth:`pre_loop`, one :meth:`post_loop`
+        and a bunch of :meth:`one_loop` in-between, which is expected
+        to return `False`` when it wants to break the main loop.
         """
         self.pre_loop_state = True
         self.pre_loop()
@@ -135,7 +236,7 @@ class EnhTerm(EtBase):
 
     def one_loop(self):
         """
-        cmd_loop repeatedly call s this method.
+        :meth:`~cmd_loop` repeatedly calls this method.
 
         Returns:
             True
@@ -525,4 +626,3 @@ class EnhTerm(EtBase):
                 raise
             except Exception as exc:
                 self.handle_watcher_exception(watcher, 'message_issued', exc)
-        return

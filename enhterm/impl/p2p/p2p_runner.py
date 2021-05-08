@@ -18,10 +18,22 @@ logger = logging.getLogger('et.runrem')
 
 class RemoteRunner(Runner):
     """
-    A runner that sends all commands to a remote host.
+    A runner that sends all text commands to a remote host.
+
+    The purpose of the runner is to take commands and do something useful
+    with them. The default runner simply executes the command by calling
+    its :meth:`Command.execute` method. This runner takes the command
+    and sends it as a message to a remote host.
 
     The remote host will execute the command, capture the output and
-    will send it back here.
+    will send it back here. The output consists of the command
+    result and the list of messages that were generated since command
+    started to execute and until it ended (:class:`~RemoteWatcher` is used
+    for that on the remote host.
+
+    The runner waits for the result and issues the messages as if they were
+    generated on this host and returns the result of running the command.
+    The result is also stored inside the command that was provided as input.
 
     Attributes:
         zmq_app (LocalPeer):
@@ -123,7 +135,7 @@ class RemoteRunner(Runner):
         Get the concern that mediates message transport.
 
         It is asserted that the :class:`~LocalPeer` installed in the instance
-        has a concern which exports the `et` message type (
+        has a concern which exports the `et` message type.
         """
         return self.zmq_app.concerns[b'et']
 

@@ -11,10 +11,12 @@ logger = logging.getLogger('et.quit')
 
 class QuitCommand(Command):
     """
-    This class .
+    Returning this command will cause the terminal
+    to exit the command loop.
 
     Attributes:
-
+        reason (str):
+            The reason the program quits. Simply passed along.
     """
 
     def __init__(self, reason=None, *args, **kwargs):
@@ -22,7 +24,8 @@ class QuitCommand(Command):
         Constructor.
 
         Arguments:
-
+            reason (str):
+                The reason the program quits. Simply passed along.
         """
         super().__init__(*args, **kwargs)
         self.reason = reason

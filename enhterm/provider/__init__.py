@@ -13,7 +13,27 @@ class Provider(EtBase):
     """
     A class capable of providing command to the terminal.
 
-    To install the
+    To install the provider into the terminal one can provide it
+    to the constructor or use the :meth:`~EnhTerm.install_provider` method.
+
+    The purpose of this class is to provide a command to be executed when asked
+    by the terminal. We define de interface here and actual implementations
+    are in separate modules.
+
+    In a terminal the providers form a stack, with the one at the
+    top of the stack being the active provider (the one that is asked
+    for next command via :meth:`~get_command`). The provider
+    is informed that it was installed and that it is now the active provider
+    via :meth:`~start`. The provider that was previously active
+    is informed via :meth:`~pause`that is no longer active
+    and via :meth:`~unpause`when it becomes active again
+    (the provider directly above it in the attach has finished).
+
+    To indicate that it has no other commands to provide the implementation
+    should return `None` in :meth:`~get_command`. The terminal will
+    then call :meth:`~stop`method to confirm that it was uninstalled.
+    Same mechanism is used if an unhandled exception in the provider
+    is caught by the terminal.
 
     Attributes:
         term (EnhTerm):

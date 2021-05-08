@@ -17,12 +17,41 @@ to construct your own base class if EnhTerm is not suitable.
 As with [cmd.Cmd](https://docs.python.org/3/library/cmd.html), the class
 constructed as described above can be used like so:
 
+
     from enhterm import EnhTerm
-    class ExampleShell(EnhTerm):
-        pass
+
+    from enhterm.provider.parser.argparser import ArgParser
+    from enhterm.provider.stream_provider import StreamProvider
+
+    provider = StreamProvider()
     
+    provider.parser = ArgParser(provider=provider)
+    subparsers = provider.parser.add_subparsers(
+        title="commands", dest="command", help="commands")
+
+
+    def do_add(command, integers):
+        return sum(integers)
+
+
+    parser_add = subparsers.add_parser('add')
+    parser_add.add_argument(
+         'integers', metavar='int', nargs='+', type=int,
+         help='integers to be summed (space sepparated list)')
+    parser_add.set_defaults(func=do_add)
+
+
+    class MyShell(EnhTerm):
+        """ This terminal is bare bone. Has a single command that can add integers. """
+        def __init__(self):
+            super().__init__(providers=provider)
+
+
     if __name__ == '__main__':
-        ExampleShell().cmdloop()
+        print("Type 'add 1 2 3 4 5 6 7 8 9' and you should get back 45").
+        print("Type '-h' to get back the usage").
+        MyShell().cmd_loop()
+
 
 Install
 -------

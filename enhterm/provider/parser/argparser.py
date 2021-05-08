@@ -119,7 +119,7 @@ class ArgParser(ArgumentParser, Parser):
     """
     Parser that uses argparse library to interpret the text.
 
-    Note the two functions of this class: an `enhterm` parser and
+    Note the two functions of this class: an `enhterm` parser
     and :class:`argparse.ArgumentParser`.
 
     The usual use of this parser is through subparsers that implement commands.
@@ -157,6 +157,7 @@ class ArgParser(ArgumentParser, Parser):
         """
         provider = kwargs.pop('provider', None)
         super().__init__(*args, **kwargs)
+        assert provider is not None, "The provider must be set and kept the same for the lifetime of the parser"
         self.provider = provider
         self.prog = ''
         self._subparser_action = None

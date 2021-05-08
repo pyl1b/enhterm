@@ -24,6 +24,17 @@ class DictSerDeSer(SerDeSer):
     Serialize and de-serialize commands based on a dictionary
     and umsgpack.
 
+    Classes that should be handled by this class must be registered,
+    which bassically meand that an id is associated with a constructor
+    that takes no arguments. The id is then saved on one side and used
+    on the other to recreate the class.
+    
+    The objects handled by thos class (Command, Paragraph) implement
+    the Serializable interface, meaning they have a class_id method
+    an encode and a decode method. Once the object
+    is constructed the raw bytes or simple types are
+    provided to decode method to fully initialize the object.
+
     Attributes:
         term (EnhTerm):
             The terminal where this registry belongs.
