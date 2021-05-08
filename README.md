@@ -21,19 +21,26 @@ constructed as described above can be used like so:
     from enhterm import EnhTerm
 
     from enhterm.provider.parser.argparser import ArgParser
+    from enhterm.provider.parser.argparser.commands import register_commands
     from enhterm.provider.stream_provider import StreamProvider
 
+    # The stream provider by default reads the input from console.
     provider = StreamProvider()
     
+    # The text entered by the user then needs to be interpreted.
+    # Here we use an interpreter based on argparse.
     provider.parser = ArgParser(provider=provider)
     subparsers = provider.parser.add_subparsers(
         title="commands", dest="command", help="commands")
+    # Quit is the only predefined command at this time.
+    register_commands(subparsers)
 
 
+    # Define you own handler.
     def do_add(command, integers):
         return sum(integers)
 
-
+    # Add this command to the argparse library.
     parser_add = subparsers.add_parser('add')
     parser_add.add_argument(
          'integers', metavar='int', nargs='+', type=int,
@@ -41,8 +48,14 @@ constructed as described above can be used like so:
     parser_add.set_defaults(func=do_add)
 
 
+    # Construct the terminal.
     class MyShell(EnhTerm):
-        """ This terminal is bare bone. Has a single command that can add integers. """
+        """
+        Simple terminal.
+        
+        Has a command that can add integers and another one
+        that quits the interpreter.
+        """
         def __init__(self):
             super().__init__(providers=provider)
 
