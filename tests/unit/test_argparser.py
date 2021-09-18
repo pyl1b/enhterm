@@ -23,7 +23,7 @@ class TestArgParser(TestCase):
     def setUp(self):
         self.term = MagicMock(spec=EnhTerm)
         self.prov = MagicMock(spec=ParserProvider)
-        self.testee = ArgParser()
+        self.testee = ArgParser(provider=self.prov)
         self.prov.term = self.term
         self.testee.provider = self.prov
 
@@ -31,7 +31,7 @@ class TestArgParser(TestCase):
         self.testee = None
 
     def test_init(self):
-        testee = ArgParser()
+        testee = ArgParser(provider=self.prov)
         # ============== ArgumentParser ==============
         self.assertEqual(testee.add_help, True)
         self.assertEqual(testee.allow_abbrev, True)
@@ -45,7 +45,7 @@ class TestArgParser(TestCase):
         self.assertIsNone(testee.fromfile_prefix_chars)
         self.assertIsNone(testee.usage)
         # ================== Parser ==================
-        self.assertIsNone(testee.provider)
+        # self.assertIsNone(testee.provider)
 
     def test_str(self):
         self.assertIn('ArgParser', '%s' % self.testee)

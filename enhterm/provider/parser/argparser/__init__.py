@@ -157,7 +157,8 @@ class ArgParser(ArgumentParser, Parser):
         """
         provider = kwargs.pop('provider', None)
         super().__init__(*args, **kwargs)
-        assert provider is not None, "The provider must be set and kept the same for the lifetime of the parser"
+        assert provider is not None, "The provider must be set and kept " \
+                                     "the same for the lifetime of the parser"
         self.provider = provider
         self.prog = ''
         self._subparser_action = None
