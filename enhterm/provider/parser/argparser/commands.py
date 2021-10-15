@@ -15,7 +15,12 @@ def do_quit(command):
     raise QuitError
 
 
-def do_prefix(command, modifiers):
+def do_prefix(command, modifiers, show=False):
+    if show:
+        command.term.info(f"Current prefix is: {command.term.provider.parser.prefix}")
+        command.term.info(f"Current suffix is: {command.term.provider.parser.suffix}")
+        return
+
     if len(modifiers) > 2:
         command.term.error(f"Two modifiers at most are accepted: "
                            f"the prefix and the suffix; you "
@@ -32,7 +37,7 @@ def do_prefix(command, modifiers):
     if len(suffix):
         suffix = ' ' + suffix
     command.term.provider.parser.prefix = prefix
-    command.term.provider.parser.prefix = suffix
+    command.term.provider.parser.suffix = suffix
 
 
 def do_execute(command, files):
@@ -63,12 +68,17 @@ def register_commands(subparsers):
         'wrap-commands', aliases=['wcs'],
         help = "Prefix and/or suffix for commands",
         description="Put a prefix and/or a suffix to all commands executed after this one",
-        epilog=None
+        epilog="To only add a suffix provide an empty string as first parameter"
     )
     parser_prefix.add_argument(
         'modifier',
-        narg='+',
+        narg='*',
         help="Provide one argument to indicate the prefix; provide two to change prefix and suffix"
+    )
+    parser_prefix.add_argument(
+        '--show',
+        type=bool,
+        help="Print current prefix and suffix"
     )
     parser_prefix.set_defaults(func=do_prefix)
 
@@ -84,4 +94,3 @@ def register_commands(subparsers):
         help="The path of the file to execute"
     )
     parser_execute.set_defaults(func=do_execute)
-
