@@ -162,6 +162,8 @@ class ArgParser(ArgumentParser, Parser):
         self.provider = provider
         self.prog = ''
         self._subparser_action = None
+        self.prefix = ''
+        self.suffix = ''
 
     def add_subparsers(self, **kwargs):
         """
@@ -219,7 +221,7 @@ class ArgParser(ArgumentParser, Parser):
                 uninstall it.
         """
         try:
-            args = self.parse_args(shlex.split(text))
+            args = self.parse_args(shlex.split(f'{self.prefix}{text}{self.suffix}'))
             return ArgParseCommand(parsed=args)
         except ParserError as exc:
             message = str(exc)

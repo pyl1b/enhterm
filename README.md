@@ -44,7 +44,7 @@ constructed as described above can be used like so:
     parser_add = subparsers.add_parser('add')
     parser_add.add_argument(
          'integers', metavar='int', nargs='+', type=int,
-         help='integers to be summed (space sepparated list)')
+         help='integers to be summed (space separated list)')
     parser_add.set_defaults(func=do_add)
 
 
@@ -61,8 +61,8 @@ constructed as described above can be used like so:
 
 
     if __name__ == '__main__':
-        print("Type 'add 1 2 3 4 5 6 7 8 9' and you should get back 45").
-        print("Type '-h' to get back the usage").
+        print("Type 'add 1 2 3 4 5 6 7 8 9' and you should get back 45")
+        print("Type '-h' to get back the usage")
         MyShell().cmd_loop()
 
 
