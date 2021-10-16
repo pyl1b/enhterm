@@ -38,6 +38,7 @@ class StreamMixin(object):
         """
         if self.prompt_stream is not None:
             self.prompt_stream.write(self.term.prompt)
+            self.prompt_stream.flush()
         result = self.input_stream.readline()
 
         # End of stream.
