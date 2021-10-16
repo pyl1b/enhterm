@@ -4,6 +4,7 @@ Predefined commands.
 """
 import logging
 import os
+import re
 
 from enhterm.provider.queue_provider import QueueProvider
 
@@ -69,6 +70,17 @@ def do_cd(command, directory):
             command.term.error("{0} is not a directory".format(directory))
         except PermissionError:
             command.term.error("You do not have permissions to change to {0}".format(directory))
+
+
+def do_variables(command, pattern=None):
+    if pattern:
+        pattern = re.compile(pattern)
+        for key, value in command.term.items():
+            if pattern.search(key):
+                command.term.info(f'{key}: {value}')
+    else:
+        for key, value in command.term.items():
+            command.term.info(f'{key}: {value}')
 
 
 def register_commands(subparsers):
@@ -138,3 +150,16 @@ def register_commands(subparsers):
         help="The path of the directory to make current"
     )
     parser_cd.set_defaults(func=do_cd)
+
+    parser_variables = subparsers.add_parser(
+        'variables',
+        help="List variables",
+        description="Present variables defined inside the terminal"
+    )
+    parser_cd.add_argument(
+        '--pattern', '-p',
+        default=None,
+        help="Only print variables that match the pattern"
+    )
+    parser_variables.set_defaults(func=do_variables)
+

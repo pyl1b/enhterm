@@ -73,12 +73,17 @@ class VariablesMixin:
             return default
         return result()
 
-    def items(self):
+    def items_list(self):
         """ A set-like object providing a view on D's items """
         result = []
         for name in self.variables:
             result.append((name, self.variables[name]()))
         return result
+
+    def items(self):
+        """ A set-like object providing a view on D's items """
+        for name in self.variables:
+            yield name, self.variables[name]()
 
     def keys(self) -> List[str]:
         """ D.keys() -> a set-like object providing a view on D's keys """
