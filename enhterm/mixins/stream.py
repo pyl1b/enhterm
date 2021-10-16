@@ -3,6 +3,7 @@
 Contains the definition of the StreamProvider class.
 """
 import logging
+import os
 import sys
 
 from enhterm.provider.parser_provider import ParserProvider
@@ -37,8 +38,13 @@ class StreamMixin(object):
         Retrieve next chunk of text.
         """
         if self.prompt_stream is not None:
-            self.prompt_stream.write(self.term.prompt)
-            self.prompt_stream.flush()
+            try:
+                prompt = self.term.replace_in_string(self.term.prompt)
+            except KeyError as exc:
+                prompt = f'KeyError({exc}) >'
+
+        self.prompt_stream.write(prompt)
+        self.prompt_stream.flush()
         result = self.input_stream.readline()
 
         # End of stream.

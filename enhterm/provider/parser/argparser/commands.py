@@ -54,6 +54,10 @@ def do_execute(command, files):
         )
 
 
+def do_prompt(command, content):
+    command.term.prompt = content
+
+
 def register_commands(subparsers):
     parser_q = subparsers.add_parser(
         'quit', aliases=['q', 'exit'],
@@ -95,3 +99,18 @@ def register_commands(subparsers):
         help="The path of the file to execute"
     )
     parser_execute.set_defaults(func=do_execute)
+
+    parser_prompt = subparsers.add_parser(
+        'prompt',
+        help="Change the prompt displayed on the command line",
+        description="Reads the file and executes the command one by one",
+        epilog="To use a variable in the prompt use the ${var} notation.\n"
+               "Following variables are available:\n"
+               "- cd: current directory (full path)\n"
+               "- cdn: current directory (only the name)\n"
+    )
+    parser_prompt.add_argument(
+        dest='content',
+        help="The new prompt"
+    )
+    parser_prompt.set_defaults(func=do_prompt)

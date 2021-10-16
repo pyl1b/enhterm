@@ -3,12 +3,14 @@
 Contains the definition of the EnhTerm class.
 """
 import logging
+from typing import Dict, Callable, Any
 
 from enhterm.base import EtBase
 from enhterm.ser_deser import SerDeSer
 from enhterm.message import Message, TextParagraph
 from enhterm.provider import Provider
 from enhterm.runner import Runner
+from enhterm.variables import VariablesMixin, add_cd_variable, add_cdn_variable
 from enhterm.watcher import Watcher
 from enhterm.watcher.echo import EchoWatcher
 from enhterm.errors import QuitError
@@ -24,7 +26,7 @@ EXEC_COMMAND_STATE = 4
 POST_LOOP_STATE = -1
 
 
-class EnhTerm(EtBase):
+class EnhTerm(VariablesMixin, EtBase):
     """
     Command interpreter.
 
@@ -157,9 +159,12 @@ class EnhTerm(EtBase):
                 :class:`~enhterm.command.Command`.
             ser_deser (SerDeSer):
                 Intermediary for packing and unpacking commands.
+            variables:
         """
         super().__init__(*args, **kwargs)
         self.should_stop = False
+        add_cd_variable(self)
+        add_cdn_variable(self)
         self.prompt = prompt if prompt else "> "
 
         if runner:
