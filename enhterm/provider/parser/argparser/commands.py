@@ -27,15 +27,14 @@ def do_prefix(command, modifiers, show=False):
                            f"provided {len(modifiers)} modifiers.")
         return
     if len(modifiers) == 2:
-        prefix = modifiers[0].strip()
-        suffix = modifiers[1].strip()
-    else:
-        prefix = modifiers[0].strip()
+        prefix = modifiers[0].lstrip()
+        suffix = modifiers[1].rstrip()
+    elif len(modifiers) == 1:
+        prefix = modifiers[0].lstrip()
         suffix = ''
-    if len(prefix):
-        prefix = ' ' + prefix
-    if len(suffix):
-        suffix = ' ' + suffix
+    else:
+        prefix = ''
+        suffix = ''
     command.term.provider.parser.prefix = prefix
     command.term.provider.parser.suffix = suffix
 
@@ -71,13 +70,14 @@ def register_commands(subparsers):
         epilog="To only add a suffix provide an empty string as first parameter"
     )
     parser_prefix.add_argument(
-        'modifier',
-        narg='*',
+        dest='modifiers',
+        nargs='*',
+        metavar='modifier',
         help="Provide one argument to indicate the prefix; provide two to change prefix and suffix"
     )
     parser_prefix.add_argument(
-        '--show',
-        type=bool,
+        '--show', '-s',
+        action='store_true',
         help="Print current prefix and suffix"
     )
     parser_prefix.set_defaults(func=do_prefix)
@@ -89,8 +89,9 @@ def register_commands(subparsers):
         epilog="Comments are lines that start with a # character."
     )
     parser_execute.add_argument(
-        'files',
-        narg='+',
+        dest='files',
+        nargs='+',
+        metavar='file',
         help="The path of the file to execute"
     )
     parser_execute.set_defaults(func=do_execute)
