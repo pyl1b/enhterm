@@ -3,6 +3,7 @@
 Predefined commands.
 """
 import logging
+import os
 
 from enhterm.provider.queue_provider import QueueProvider
 
@@ -56,6 +57,18 @@ def do_execute(command, files):
 
 def do_prompt(command, content):
     command.term.prompt = content
+
+
+def do_cd(command, directory):
+    if len(directory):
+        try:
+            os.chdir(directory)
+        except FileNotFoundError:
+            command.term.error("Directory {0} does not exist".format(directory))
+        except NotADirectoryError:
+            command.term.error("{0} is not a directory".format(directory))
+        except PermissionError:
+            command.term.error("You do not have permissions to change to {0}".format(directory))
 
 
 def register_commands(subparsers):
@@ -114,3 +127,14 @@ def register_commands(subparsers):
         help="The new prompt"
     )
     parser_prompt.set_defaults(func=do_prompt)
+
+    parser_cd = subparsers.add_parser(
+        'cd',
+        help="Change current directory on the local machine",
+        description="Changes current directory on the local machine"
+    )
+    parser_cd.add_argument(
+        dest='directory',
+        help="The path of the directory to make current"
+    )
+    parser_cd.set_defaults(func=do_cd)
