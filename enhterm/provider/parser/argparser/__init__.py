@@ -221,7 +221,10 @@ class ArgParser(ArgumentParser, Parser):
                 uninstall it.
         """
         try:
-            args = self.parse_args(shlex.split(f'{self.prefix}{text}{self.suffix}'))
+            if text.startswith('wrap-commands') or text.startswith('wcs ') or text == 'wcs':
+                args = self.parse_args(shlex.split(text))
+            else:
+                args = self.parse_args(shlex.split(f'{self.prefix}{text}{self.suffix}'))
             return ArgParseCommand(parsed=args)
         except ParserError as exc:
             message = str(exc)
