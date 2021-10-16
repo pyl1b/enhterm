@@ -230,8 +230,11 @@ class EnhTerm(EtBase):
         self.pre_loop()
 
         while not self.should_stop:
-            if not self.one_loop():
-                break
+            try:
+                if not self.one_loop():
+                    break
+            except (SystemExit, SystemError, KeyboardInterrupt):
+                self.should_stop = True
 
         self.post_loop_state = True
         self.post_loop()
