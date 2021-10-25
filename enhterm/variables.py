@@ -22,7 +22,7 @@ class VariablesMixin:
             if raise_if_missing is None:
                 return default
             else:
-                raise raise_if_missing
+                raise raise_if_missing(f'No such variable: {name}')
         return result()
 
     def add_variables(self, variables: Dict[str, Callable]):
@@ -66,7 +66,7 @@ class VariablesMixin:
         """
         self.variables = {}
 
-    def get(self, name: str, default: Any) -> Any:
+    def get(self, name: str, default: Any = None) -> Any:
         """ Return the value for key if key is in the dictionary, else default. """
         result = self.variables.get(name, None)
         if result is None:
@@ -121,14 +121,23 @@ class VariablesMixin:
     def replace_in_string(self, format_string: str, raise_if_missing=False):
         """
         Returns a string where {key} occurrences are replaced by self[key].
+
+        Please note that the algorithm is not efficient when it comes
+        to missing keys.
+
         :param format_string: The string to format.
         :param raise_if_missing: Should we raise an error when the key is missing?
         :return: The format_string with variables replaced.
         """
+        values = self.values()
         if raise_if_missing:
-            return format_string.format(**self.values())
+            return format_string.format_map(values)
         else:
-            return format_string.format_map(self.values())
+            while True:
+                try:
+                    return format_string.format_map(values)
+                except KeyError as exc:
+                    values[str(exc)[1:-1]] = ''
 
 
 def add_cd_variable(inst: VariablesMixin):
