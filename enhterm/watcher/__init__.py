@@ -4,7 +4,10 @@ Contains the definition of the Watcher class.
 """
 import logging
 
+from enhterm.message import Message
+
 from enhterm.base import EtBase
+
 
 logger = logging.getLogger('et.w')
 
@@ -80,12 +83,10 @@ class Watcher(EtBase):
         """
         pass
 
-    def message_issued(self, message):
+    def message_issued(self, message: Message):
         """
         The watcher is informed that the terminal has issued a message.
 
-        Arguments:
-            message (Message):
-                The message that was issued.
+        :param message: The message that was issued.
         """
         pass

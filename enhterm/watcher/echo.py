@@ -5,6 +5,8 @@ Contains the definition of the EchoWatcher class.
 import logging
 import sys
 
+from enhterm.message import Message
+
 from enhterm.watcher import Watcher
 
 logger = logging.getLogger('EchoWatcher')
@@ -58,7 +60,7 @@ class EchoWatcher(Watcher):
         """ Represent this object as a python constructor. """
         return 'EchoWatcher()'
 
-    def message_issued(self, message):
+    def message_issued(self, message: Message):
         """
         The watcher is informed that the terminal has issued a message.
 
