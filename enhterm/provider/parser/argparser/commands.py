@@ -162,4 +162,3 @@ def register_commands(subparsers):
         help="Only print variables that match the pattern"
     )
     parser_variables.set_defaults(func=do_variables)
-

@@ -636,6 +636,8 @@ class EnhTerm(VariablesMixin, EtBase):
 
         Default implementation informs all watchers about the message.
         """
+        if message.term is None:
+            message.term = self
         for watcher in self.watchers:
             try:
                 watcher.message_issued(message)

@@ -2,14 +2,15 @@
 
 enhterm is an [open source](https://github.com/pyl1b/enhterm.git),
 MIT licensed, [Cmd-based](https://docs.python.org/3/library/cmd.html)
-framework for writing line-oriented command interpreters.
+framework for writing command interpreters.
 
 [![Build Status](https://travis-ci.org/pyl1b/enhterm.svg?branch=master)](https://travis-ci.org/pyl1b/enhterm)
 [![Documentation Status](https://readthedocs.org/projects/enhterm/badge/?version=latest)](https://enhterm.readthedocs.io/en/latest/?badge=latest)
 
 enhterm provides a class that extends 
 [cmd.Cmd](https://docs.python.org/3/library/cmd.html) 
-and which is also intended to be inherited by a user class to create a shell.
+and which is also intended to be inherited by a user class,
+with the end purpose being to create a shell.
 
 Functionality provided by this package is split among mixins, allowing you
 to construct your own base class if EnhTerm is not suitable.
@@ -30,11 +31,10 @@ constructed as described above can be used like so:
     # The text entered by the user then needs to be interpreted.
     # Here we use an interpreter based on argparse.
     provider.parser = ArgParser(provider=provider)
-    subparsers = provider.parser.add_subparsers(
-        title="commands", dest="command", help="commands")
-    # Quit is the only predefined command at this time.
+    subparsers = provider.parser.add_subparsers()
+    
+    # Add built-in commands.
     register_commands(subparsers)
-
 
     # Define you own handler.
     def do_add(command, integers):

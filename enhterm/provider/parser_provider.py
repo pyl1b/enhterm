@@ -58,7 +58,7 @@ class ParserProvider(Provider):
         text = self.get_text()
         if text is None:
             return None
-        elif len(text) == 0:
+        elif len(text.strip()) == 0:
             return NoOpCommand(provider=self)
         else:
             return self.parser.parse(text)
