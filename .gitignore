@@ -114,3 +114,4 @@ playground/
 *.bak
 *.swp
 overrides.py
+*.url
