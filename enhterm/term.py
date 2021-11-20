@@ -612,7 +612,7 @@ class EnhTerm(VariablesMixin, EtBase):
         ])
         self.issue_message(message)
 
-    def error(self, text):
+    def error(self, text: str):
         """
         Issue an error message.
 
